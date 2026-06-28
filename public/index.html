@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TITANIUM v4 | XYRONTRACER</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --panel: #0d0d0d;
+            --accent: #00ff41;
+            --accent2: #00cc33;
+            --text: #e0e0e0;
+            --red: #ff3b3b;
+            --yellow: #ffd700;
+            --blue: #00bfff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(ellipse at top, rgba(0,255,65,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(0,255,65,0.02) 0%, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header .logo {
+            font-family: 'Courier New', monospace;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: var(--accent);
+            text-shadow: 0 0 30px rgba(0,255,65,0.5);
+        }
+        .header .sub {
+            font-size: 11px;
+            letter-spacing: 6px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* PANEL */
+        .panel {
+            background: var(--panel);
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* USER CARD */
+        .user-card {
+            display: none;
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: slideIn 0.4s ease;
+        }
+        .user-card.active { display: flex; align-items: center; gap: 16px; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-card .avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .user-card .avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            object-fit: cover;
+            box-shadow: 0 0 20px rgba(0,255,65,0.3);
+            background: #1a1a1a;
+        }
+        .user-card .verified-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: #00bfff;
+            color: #000;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            border: 2px solid #000;
+        }
+        .user-card .info { flex: 1; min-width: 0; }
+        .user-card .nickname {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+        .user-card .username {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .user-card .stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .user-card .stat {
+            text-align: center;
+        }
+        .user-card .stat-val {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .user-card .stat-label {
+            font-size: 10px;
+            color: #666;
+            letter-spacing: 1px;
+        }
+        .private-badge {
+            display: inline-block;
+            background: #ff3b3b;
+            color: #fff;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+
+        /* INPUT GROUP */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #666;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 13px 16px;
+            background: #0a0a0a;
+            border: 1px solid #222;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(0,255,65,0.1);
+        }
+        .input-group input::placeholder { color: #444; }
+        .input-group select { cursor: pointer; appearance: none; }
+        .input-group select option { background: #111; color: #fff; }
+
+        /* ROW */
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+        .row .input-group { flex: 1; }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            font-family: inherit;
+            margin-top: 5px;
+        }
+        .btn-resolve {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            margin-top: 10px;
+        }
+        .btn-resolve:hover {
+            background: rgba(0,255,65,0.1);
+            box-shadow: 0 0 20px rgba(0,255,65,0.2);
+        }
+        .btn-inject {
+            background: var(--accent);
+            color: #000;
+            margin-top: 15px;
+            font-size: 16px;
+            letter-spacing: 2px;
+        }
+        .btn-inject:hover {
+            background: var(--accent2);
+            box-shadow: 0 0 30px rgba(0,255,65,0.4);
+            transform: translateY(-1px);
+        }
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .btn-resolve.loading {
+            border-color: var(--yellow);
+            color: var(--yellow);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* LOG */
+        .log-area {
+            background: #000;
+            border: 1px solid #1a1a1a;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+        .log-area .log-entry {
+            margin-bottom: 2px;
+            word-break: break-all;
+        }
+        .log-info { color: #aaa; }
+        .log-success { color: #00ff41; }
+        .log-error { color: #ff3b3b; }
+        .log-warn { color: #ffd700; }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            .panel { padding: 18px; border-radius: 12px; }
+            .header .logo { font-size: 22px; }
+            .user-card { flex-direction: column; text-align: center; }
+            .user-card .stats { justify-content: center; }
+            .row { flex-direction: column; gap: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div class="logo">⚡ TITANIUM v4</div>
+            <div class="sub">XYRONTRACER SYSTEM</div>
+        </div>
+
+        <!-- MAIN PANEL -->
+        <div class="panel">
+            <!-- USER CARD (muncul setelah resolve) -->
+            <div class="user-card" id="userCard">
+                <div class="avatar-wrap">
+                    <img class="avatar" id="userAvatar" src="" alt="Avatar">
+                    <div class="verified-badge" id="verifiedBadge" style="display:none;">✓</div>
+                </div>
+                <div class="info">
+                    <div class="nickname" id="userNickname">—</div>
+                    <div class="username" id="userUsername">@—</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <div class="stat-val" id="statFollowers">0</div>
+                            <div class="stat-label">FOLLOWERS</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-val" id="statFollowing">0</div>
+                            <div class="stat-label">FOLLOWING</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-val" id="statLikes">0</div>
+                            <div class="stat-label">LIKES</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-val" id="statVideos">0</div>
+                            <div class="stat-label">VIDEOS</div>
+                        </div>
+                    </div>
+                    <div class="private-badge" id="privateBadge" style="display:none;">🔒 PRIVATE</div>
+                </div>
+            </div>
+
+            <!-- USERNAME INPUT -->
+            <div class="input-group">
+                <label>🔍 Username TikTok</label>
+                <input 
+                    type="text" 
+                    id="usernameInput" 
+                    placeholder="Masukkan username (dengan/tanpa @)"
+                    autocomplete="off"
+                >
+            </div>
+            <button class="btn btn-resolve" id="btnResolve" onclick="resolveUser()">
+                🔎 CEK AKUN
+            </button>
+
+            <!-- INJECTION CONTROLS (tersembunyi sebelum resolve) -->
+            <div id="injectControls" style="display:none;">
+                <div class="row">
+                    <div class="input-group">
+                        <label>🎯 Tipe</label>
+                        <select id="injectType">
+                            <option value="followers">👤 Followers</option>
+                            <option value="views">👁 Views</option>
+                            <option value="likes">❤ Likes</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>📊 Jumlah</label>
+                        <input type="number" id="injectAmount" value="50" min="1" max="100" placeholder="Max 100">
+                    </div>
+                </div>
+
+                <!-- TARGET ID (auto-filled / manual) -->
+                <div class="input-group" id="targetIdGroup" style="display:none;">
+                    <label>🆔 Target ID</label>
+                    <input type="text" id="targetId" placeholder="User ID / Video ID" readonly>
+                </div>
+
+                <button class="btn btn-inject" id="btnInject" onclick="startInjection()">
+                    ⚡ INJECT SEKARANG
+                </button>
+            </div>
+
+            <!-- LOG -->
+            <div class="log-area" id="logArea">
+                <span class="log-info">[SYSTEM] Menunggu input username...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ STATE ============
+        let resolvedUserData = null;
+        let isProcessing = false;
+        const API_BASE = window.location.origin + '/api/inject';
+
+        // ============ DOM REFS ============
+        const $ = (sel) => document.querySelector(sel);
+        const userCard = $('#userCard');
+        const injectControls = $('#injectControls');
+        const logArea = $('#logArea');
+        const btnResolve = $('#btnResolve');
+        const btnInject = $('#btnInject');
+
+        // ============ LOGGING ============
+        function log(msg, type = 'info') {
+            const cls = `log-${type}`;
+            const time = new Date().toLocaleTimeString('id-ID', { hour12: false });
+            logArea.innerHTML += `<div class="log-entry ${cls}">[${time}] ${msg}</div>`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function clearLog() {
+            logArea.innerHTML = '';
+        }
+
+        // ============ FORMAT ANGKA ============
+        function formatNumber(num) {
+            if (!num) return '0';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+            return num.toString();
+        }
+
+        // ============ RESOLVE USERNAME ============
+        async function resolveUser() {
+            if (isProcessing) return;
+            
+            const username = $('#usernameInput').value.trim();
+            if (!username) {
+                log('Masukkan username dulu bre', 'warn');
+                return;
+            }
+
+            isProcessing = true;
+            btnResolve.classList.add('loading');
+            btnResolve.textContent = '⏳ MENCARI...';
+            userCard.classList.remove('active');
+            injectControls.style.display = 'none';
+            resolvedUserData = null;
+            clearLog();
+            
+            log(`Mencari akun @${username.replace('@','')}...`, 'info');
+
+            try {
+                const res = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'resolve', username })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    const d = data.data;
+                    resolvedUserData = d;
+
+                    // Populate user card
+                    $('#userAvatar').src = d.avatarUrl;
+                    $('#userNickname').textContent = d.nickname;
+                    $('#userUsername').textContent = '@' + d.uniqueId;
+                    $('#statFollowers').textContent = formatNumber(d.stats.followers);
+                    $('#statFollowing').textContent = formatNumber(d.stats.following);
+                    $('#statLikes').textContent = formatNumber(d.stats.likes);
+                    $('#statVideos').textContent = formatNumber(d.stats.videos);
+
+                    // Badges
+                    $('#verifiedBadge').style.display = d.verified ? 'flex' : 'none';
+                    $('#privateBadge').style.display = d.privateAccount ? 'inline-block' : 'none';
+
+                    // Show card
+                    userCard.classList.add('active');
+                    injectControls.style.display = 'block';
+                    $('#targetId').value = d.userId;
+                    $('#targetIdGroup').style.display = 'none'; // default hidden
+
+                    log(`✅ Akun ditemukan: ${d.nickname} (@${d.uniqueId})`, 'success');
+                    log(`📊 Followers: ${formatNumber(d.stats.followers)} | Likes: ${formatNumber(d.stats.likes)}`, 'info');
+                    
+                    if (d.privateAccount) {
+                        log('⚠ Akun PRIVATE — inject mungkin gagal', 'warn');
+                    }
+                } else {
+                    log(`❌ Gagal: ${data.error}`, 'error');
+                    log('💡 Pastikan username benar dan akun tidak di-ban', 'warn');
+                }
+            } catch (e) {
+                log(`🔥 Network error: ${e.message}`, 'error');
+            }
+
+            isProcessing = false;
+            btnResolve.classList.remove('loading');
+            btnResolve.textContent = '🔎 CEK AKUN';
+        }
+
+        // ============ TOGGLE TARGET INPUT ============
+        $('#injectType').addEventListener('change', function() {
+            const type = this.value;
+            const targetIdGroup = $('#targetIdGroup');
+            const targetIdInput = $('#targetId');
+            
+            if (type === 'views' || type === 'likes') {
+                // Butuh Video ID
+                targetIdGroup.style.display = 'block';
+                targetIdInput.readOnly = false;
+                targetIdInput.placeholder = 'Masukkan link video atau Video ID';
+                targetIdInput.value = '';
+                log('⚠ Untuk views/likes, masukkan URL video atau Video ID', 'warn');
+            } else {
+                // Followers — pake User ID dari resolve
+                targetIdGroup.style.display = 'none';
+                if (resolvedUserData) {
+                    targetIdInput.value = resolvedUserData.userId;
+                }
+            }
+        });
+
+        // ============ INJECT ============
+        async function startInjection() {
+            if (isProcessing) return;
+
+            const type = $('#injectType').value;
+            const amount = parseInt($('#injectAmount').value);
+            const targetId = $('#targetId').value.trim();
+
+            // Validasi
+            if (type === 'followers' && !resolvedUserData) {
+                log('❌ Resolve username dulu buat followers!', 'error');
+                return;
+            }
+            if ((type === 'views' || type === 'likes') && !targetId) {
+                log('❌ Masukkan Video ID atau URL video!', 'error');
+                return;
+            }
+            if (isNaN(amount) || amount < 1 || amount > 100) {
+                log('❌ Jumlah harus 1-100!', 'error');
+                return;
+            }
+
+            // Kalo views/likes & inputnya URL, resolve dulu
+            let finalTargetId = targetId;
+            if ((type === 'views' || type === 'likes') && !/^\d{17,19}$/.test(targetId)) {
+                log('🔍 Resolve URL video...', 'info');
+                try {
+                    const vidRes = await fetch(API_BASE, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'resolveVideo', videoUrl: targetId })
+                    });
+                    const vidData = await vidRes.json();
+                    if (vidData.success) {
+                        finalTargetId = vidData.videoId;
+                        $('#targetId').value = finalTargetId;
+                        log(`✅ Video ID: ${finalTargetId}`, 'success');
+                    } else {
+                        log(`❌ Gagal resolve video: ${vidData.error}`, 'error');
+                        return;
+                    }
+                } catch (e) {
+                    log(`❌ Error resolve video: ${e.message}`, 'error');
+                    return;
+                }
+            }
+
+            // Mulai inject
+            isProcessing = true;
+            btnInject.disabled = true;
+            btnInject.textContent = '⏳ MENGINJEKSI...';
+
+            const targetLabel = type === 'followers' 
+                ? `@${resolvedUserData.uniqueId}` 
+                : `Video ${finalTargetId.substring(0,10)}...`;
+
+            log(`🚀 Mulai inject ${amount} ${type} ke ${targetLabel}`, 'info');
+
+            const startTime = Date.now();
+
+            try {
+                const res = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'inject',
+                        type,
+                        targetId: finalTargetId,
+                        amount
+                    })
+                });
+
+                const data = await res.json();
+                const elapsed = ((Date.now() - startTime) / 1000).toFixed(2);
+
+                if (data.success) {
+                    log(`✅ BERHASIL! ${data.data.injected}/${data.data.requested} ${type} terkirim`, 'success');
+                    log(`📈 Success rate: ${data.data.successRate} | ⏱ ${elapsed}s`, 'success');
+                    
+                    // Update follower count lokal kalo followers
+                    if (type === 'followers' && resolvedUserData) {
+                        const newCount = resolvedUserData.stats.followers + data.data.injected;
+                        $('#statFollowers').textContent = formatNumber(newCount);
+                        log(`📊 Followers terbaru: ~${formatNumber(newCount)}`, 'info');
+                    }
+                } else {
+                    log(`❌ Gagal: ${data.error}`, 'error');
+                    if (data.partialResult > 0) {
+                        log(`⚠ Partial: ${data.partialResult} berhasil sebelum error`, 'warn');
+                    }
+                }
+            } catch (e) {
+                log(`🔥 Fatal error: ${e.message}`, 'error');
+                log('💡 Coba lagi dengan jumlah lebih kecil', 'warn');
+            }
+
+            isProcessing = false;
+            btnInject.disabled = false;
+            btnInject.textContent = '⚡ INJECT SEKARANG';
+            log('🟢 Siap untuk request berikutnya', 'info');
+        }
+
+        // ============ ENTER KEY SUPPORT ============
+        $('#usernameInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') resolveUser();
+        });
+
+        $('#injectAmount').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') startInjection();
+        });
+
+        $('#targetId').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') startInjection();
+        });
+
+        // ============ INIT ============
+        log('🟢 TITANIUM v4 siap — XYRONTRACER SYSTEM', 'success');
+        log('💡 Masukkan username TikTok lalu klik CEK AKUN', 'info');
+    </script>
+</body>
+</html>
