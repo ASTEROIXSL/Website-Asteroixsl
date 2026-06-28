@@ -1,0 +1,10 @@
+{
+  "name": "titanium-injector",
+  "version": "3.0.0",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

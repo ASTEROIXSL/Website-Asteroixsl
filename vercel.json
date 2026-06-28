@@ -1,0 +1,17 @@
+{
+  "functions": {
+    "api/inject.js": {
+      "maxDuration": 30,
+      "memory": 512
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "POST, OPTIONS" }
+      ]
+    }
+  ]
+}
